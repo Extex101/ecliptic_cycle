@@ -6,3 +6,6 @@
 
 ![The Dance of the Pale](https://cdn.discordapp.com/attachments/780505995323375637/1360025411383328878/ecliptic_cycle_dance_of_the_pale.gif?ex=67f99dde&is=67f84c5e&hm=9260999ba1b20690918a22ba94858ce19367bf1bf9b6a1eddff19132ff019871&)
 
+You may be able to spot one of the rare Celestial events!
+
+![Blackmore's Night](https://cdn.discordapp.com/attachments/780505995323375637/1360040113945448459/ezgif-72bf752e238357.png?ex=67f9ab8f&is=67f85a0f&hm=bd0d7e4e81f21c27a7bd296bc68845f4e400900d3fb4c3d7070ff558fe763379&)
