@@ -7,16 +7,14 @@ if not core.settings:get("ecliptic_cycle.update_timer") then
 end
 
 ecliptic_cycle = {
-    phase_offset = core.settings:get("ecliptic_cycle.phase_offset"),
-    update_timer = core.settings:get("ecliptic_cycle.update_timer"),
+    phase_offset = tonumber(core.settings:get("ecliptic_cycle.phase_offset")),
+    update_timer = tonumber(core.settings:get("ecliptic_cycle.update_timer")),
     current_lunar_phase = 0,
     effect = {},
     threshold = 1.94, -- Threshold for registered effect events
     variance_threshold = 1.5, -- Threshold for random color variance events
     variance = 0.3, -- Variance for random color events
 }
-
-
 
 
 local path = core.get_modpath(core.get_current_modname())
@@ -38,8 +36,8 @@ ecliptic_cycle.register_effect("Blackmore's Night",     "#3a3b71", "#c272b1")
 ecliptic_cycle.register_effect("Doom",                  "#50002f", "#ff2f00")
 
 
+
 core.register_on_joinplayer(function(player)
-    ecliptic_cycle.current_lunar_phase = (core.get_day_count() + ecliptic_cycle.phase_offset) % 30
     ecliptic_cycle.update_player_moon(player)
 end)
 
@@ -64,7 +62,6 @@ core.register_globalstep(function(dtime)
                 elseif not event and #ecliptic_cycle.effect > 0 then
                     ecliptic_cycle.effect = {}
                 end
-
                 for _, player in pairs(core.get_connected_players()) do
                     ecliptic_cycle.update_player_moon(player)
                 end
