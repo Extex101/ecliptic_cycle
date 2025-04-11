@@ -1,5 +1,5 @@
 if not core.settings:get("ecliptic_cycle.phase_offset") then
-    core.settings:set("ecliptic_cycle.phase_offset", 3763150)
+    core.settings:set("ecliptic_cycle.phase_offset", 3763156)
 end
 
 if not core.settings:get("ecliptic_cycle.update_timer") then
