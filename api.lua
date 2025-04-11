@@ -33,7 +33,7 @@ ecliptic_cycle.phase_names = {
     "Northern Waxing Gibbous",
 }
 
-local effects = {
+ecliptic_cycle.effects = {
     colors = {},
     names = {}
 }
@@ -65,8 +65,8 @@ local function randomhex(min, max, fac)
 end
 
 function ecliptic_cycle.register_effect(name, col1, col2)
-    effects.colors[name] = {col1, col2}
-    table.insert(effects.names, name)
+    ecliptic_cycle.effects.colors[name] = {col1, col2}
+    table.insert(ecliptic_cycle.effects.names, name)
 end
 
 function ecliptic_cycle.get_day(c)
@@ -85,12 +85,12 @@ function ecliptic_cycle.set_effect(...)
             return true
         elseif type(param) == "string" then
             if param == "shuffle" then
-                local effect = effects.names[math.random(1, #effects.names)]
-                ecliptic_cycle.effect = effects.colors[effect]
+                local effect = ecliptic_cycle.effects.names[math.random(1, #ecliptic_cycle.effects.names)]
+                ecliptic_cycle.effect = ecliptic_cycle.effects.colors[effect]
                 return true, effect
             end
-            if effects[param] then
-                ecliptic_cycle.effect = effects[param]
+            if ecliptic_cycle.effects.colors[param] then
+                ecliptic_cycle.effect = ecliptic_cycle.effects.colors[param]
                 return true
             end
             local colors = get_hexes(param)
@@ -98,7 +98,7 @@ function ecliptic_cycle.set_effect(...)
                 ecliptic_cycle.effect = {colors[1], colors[2]}
                 return true
             end
-            return false, "Invalid Color: \""..tostring(param).."\""
+            return false, "Invalid Color: \""..tostring(param).."\" 1 Arg"
         end
         -- error("Effect: "..tostring(param).." is invalid. Expected \"string\" or \"number\" got \""..type(param).."\"")
         return
@@ -109,7 +109,7 @@ function ecliptic_cycle.set_effect(...)
             return true
         end
         -- error("Colors invalid")
-        return false, "Invalid Color: \""..tostring(args[1]).."\", \""..tostring(args[2]).."\""
+        return false, "Invalid Color: \""..tostring(args[1]).."\", \""..tostring(args[2]).."\" 2 Args"
     end
     return false, "No Parameters."
 end
@@ -140,9 +140,10 @@ function ecliptic_cycle.update_player_moon(player)
     })
 end
 
-function ecliptic_cycle.set_phase(day)
+function ecliptic_cycle.set_phase(day, skip)
     if not day then day = ecliptic_cycle.get_day() end
     ecliptic_cycle.current_lunar_phase = day % 30
+    if skip then return end
     local event, random_event = ecliptic_cycle.is_event(day)
     if event then
         ecliptic_cycle.set_effect("shuffle")

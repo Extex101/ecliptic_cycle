@@ -36,7 +36,7 @@ core.register_chatcommand("phase", {
                 ecliptic_cycle.phase_offset = ecliptic_cycle.phase_offset + 1
             end
             core.settings:set("ecliptic_cycle.phase_offset", ecliptic_cycle.phase_offset)
-            ecliptic_cycle.set_phase()
+            ecliptic_cycle.set_phase(nil, param:find("force"))
             if param == "add force" or param == "subtract foce" then
                 for _, player in pairs(core.get_connected_players()) do
                     ecliptic_cycle.update_player_moon(player)
