@@ -9,3 +9,5 @@
 You may be able to spot one of the rare Celestial events!
 
 ![Blackmore's Night](https://cdn.discordapp.com/attachments/780505995323375637/1360040113945448459/ezgif-72bf752e238357.png?ex=67f9ab8f&is=67f85a0f&hm=bd0d7e4e81f21c27a7bd296bc68845f4e400900d3fb4c3d7070ff558fe763379&)
+
+![Doom](https://raw.githubusercontent.com/Extex101/ecliptic_cycle/refs/heads/main/screenshot.png)
