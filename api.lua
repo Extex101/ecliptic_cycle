@@ -120,7 +120,7 @@ function ecliptic_cycle.is_event(day)
         math.sin(math.rad(
             day/(day*5 % 60 + 60) * 7000
         ))
-    ) * 2 / 2
+    )
     local event2 = math.cos(math.rad(day*math.max(math.min(math.tan(math.rad(day)), math.pi), -math.pi)))*2
     return event > ecliptic_cycle.threshold, event2 < -ecliptic_cycle.variance_threshold
 end
