@@ -2,4 +2,4 @@
 ecliptic_cycle.phase_offset (Phase Offset) float 3763150
 
 # Timer before mod checks the time to see if the phase needs to be updates. \nIf you have a very fast time_speed you should change this to something small.
-ecliptic_cycle.update_timer (Update Timer) float 30
+ecliptic_cycle.update_timer (Update Timer) float 10

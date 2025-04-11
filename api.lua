@@ -85,8 +85,9 @@ function ecliptic_cycle.set_effect(...)
             return true
         elseif type(param) == "string" then
             if param == "shuffle" then
-                ecliptic_cycle.effect = effects.colors[effects.names[math.random(1, #effects.names)]]
-                return true
+                local effect = effects.names[math.random(1, #effects.names)]
+                ecliptic_cycle.effect = effects.colors[effect]
+                return true, effect
             end
             if effects[param] then
                 ecliptic_cycle.effect = effects[param]
@@ -142,4 +143,12 @@ end
 function ecliptic_cycle.set_phase(day)
     if not day then day = ecliptic_cycle.get_day() end
     ecliptic_cycle.current_lunar_phase = day % 30
+    local event, random_event = ecliptic_cycle.is_event(day)
+    if event then
+        ecliptic_cycle.set_effect("shuffle")
+    elseif random_event then
+        ecliptic_cycle.set_effect(ecliptic_cycle.variance)
+    elseif not event and #ecliptic_cycle.effect > 0 then
+        ecliptic_cycle.effect = {}
+    end
 end

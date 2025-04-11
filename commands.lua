@@ -35,7 +35,7 @@ core.register_chatcommand("phase", {
             else
                 ecliptic_cycle.phase_offset = ecliptic_cycle.phase_offset + 1
             end
-            core.settings:set_integer("ecliptic_cycle.phase_offset", ecliptic_cycle.phase_offset)
+            core.settings:set("ecliptic_cycle.phase_offset", ecliptic_cycle.phase_offset)
             ecliptic_cycle.set_phase()
             if param == "add force" or param == "subtract foce" then
                 for _, player in pairs(core.get_connected_players()) do
@@ -53,7 +53,7 @@ core.register_chatcommand("phase", {
 
 core.register_chatcommand("next_lunar_event", {
     description = "Prints how many days until the next lunar event.",
-    params = "sprint (Skips 30-100 days to the next lunar event, kind of bugged. Not reccomended.)",
+    params = "sprint (Skips several days to the day before the next lunar event, kind of bugged. Not reccomended)",
     privs = {server=true},
     func = function(name, param)
         local current_day = ecliptic_cycle.get_day()
@@ -61,8 +61,8 @@ core.register_chatcommand("next_lunar_event", {
             local days = 1
             local event = ecliptic_cycle.is_event(current_day)
             while not event do
-                core.set_timeofday(0.5)
                 core.set_timeofday(1)
+                core.set_timeofday(0.5)
                 event = ecliptic_cycle.is_event(current_day+days+1)
                 days = days + 1
             end
@@ -70,7 +70,8 @@ core.register_chatcommand("next_lunar_event", {
             for _, player in pairs(core.get_connected_players()) do
                 ecliptic_cycle.update_player_moon(player)
             end
-            return true, "Skipped "..days.." days to next lunar event. Day: "..ecliptic_cycle.get_day()
+            local d = days == 1 and "" or "s"
+            return true, "Skipped "..days.." day"..d.." to next lunar event."
         end
         local days = 0
         local event = ecliptic_cycle.is_event(current_day+days)
@@ -80,8 +81,11 @@ core.register_chatcommand("next_lunar_event", {
         end
         local d = days == 1 and "" or "s"
         if days == 0 then
-            return true, "Lunar Event: today! event: "..tostring(event)
+            if core.get_timeofday()*24000 < 6000 then
+                return true, "Next Lunar Event is in: 1 day."
+            end
+            return true, "Next Lunar Event is tonight!"
         end
-        return true, "Next Lunar Event is in: "..days.." day"..d..". Event value: "..tostring(event)..", Day count: "..(ecliptic_cycle.get_day()+days)
+        return true, "Next Lunar Event is in: "..days.." day"..d.."."
     end
 })
