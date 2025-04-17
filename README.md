@@ -5,10 +5,8 @@
   - This mod takes that idea and makes moon phases out of it. 
   - The moon rocks from side-to-side, in-and-out of the umbra of the earth.
 
-![The Dance of the Pale](https://cdn.discordapp.com/attachments/780505995323375637/1360025411383328878/ecliptic_cycle_dance_of_the_pale.gif?ex=67f99dde&is=67f84c5e&hm=9260999ba1b20690918a22ba94858ce19367bf1bf9b6a1eddff19132ff019871&)
+![Technical Demonstration](https://cdn.discordapp.com/attachments/780505995323375637/1362223448192975118/ecliptic_cycle_umbra_demonstration.gif?ex=68019cf2&is=68004b72&hm=ee058e2df3079461e0aef5d5f33f3599f6caced16a94614fbcc057a7d87aa6cf&)![The Dance of the Pale](https://cdn.discordapp.com/attachments/780505995323375637/1362250613315997788/ecliptic_cycle_animated_phases_greenbg.gif?ex=6801b63f&is=680064bf&hm=2d5e8447ae65b8a204040440ec44c179477b21c46818722f58e3da1ad399a51d&)
 
 You may be able to spot one of the rare Celestial events!
 
-![Blackmore's Night](https://cdn.discordapp.com/attachments/780505995323375637/1360040113945448459/ezgif-72bf752e238357.png?ex=67f9ab8f&is=67f85a0f&hm=bd0d7e4e81f21c27a7bd296bc68845f4e400900d3fb4c3d7070ff558fe763379&)
-
-![Doom](https://raw.githubusercontent.com/Extex101/ecliptic_cycle/refs/heads/main/screenshot.png)
+![Lunar Phases](https://github.com/Extex101/ecliptic_cycle/blob/main/screenshot.png)
