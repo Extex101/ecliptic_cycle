@@ -36,17 +36,18 @@ ecliptic_cycle.register_effect("Spectre",                "#7100a0", "#b1ddfa")
 ecliptic_cycle.register_effect("Blackmore's Night",      "#3a3b71", "#c272b1")
 ecliptic_cycle.register_effect("Doom",                   "#50002f", "#ff2f00")
 ecliptic_cycle.register_effect("Nori",                   "#384769", "#60a658")
-ecliptic_cycle.register_effect("Mars",                   "#4e3139", "#9c4a37")
+ecliptic_cycle.register_effect("Mars",                   "#3b2b32", "#9c4a37")
 ecliptic_cycle.register_effect("Chicken Nugget",         "#a10000", "#e7a200")
-ecliptic_cycle.register_effect("Pluto",                  "#8c1e15", "#bfaa8f")
+ecliptic_cycle.register_effect("Pluto",                  "#8c1e15", "#b6ad8e")
 ecliptic_cycle.register_effect("Halloween Dream Machine","#3b2132", "#555e5f")
+ecliptic_cycle.register_effect("Cosmic Clockwork",       "#09362b", "#926e45")
 
 
 local server_started = false
 
 core.register_on_joinplayer(function(player)
     if not server_started then
-        ecliptic_cycle.set_phase()
+        ecliptic_cycle.update_phase()
         server_started = true
     end
     ecliptic_cycle.update_player_moon(player)
@@ -64,10 +65,8 @@ core.register_globalstep(function(dtime)
 
             -- Check if the phase has changed (account for the looping)
             if ecliptic_cycle.current_lunar_phase < new_phase or ecliptic_cycle.current_lunar_phase == 29 and new_phase == 0 then
-                ecliptic_cycle.set_phase(current_day)
-                for _, player in pairs(core.get_connected_players()) do
-                    ecliptic_cycle.update_player_moon(player)
-                end
+                ecliptic_cycle.update_phase()
+                ecliptic_cycle.update_players()
             end
         end
         timer = 0
