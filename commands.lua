@@ -1,4 +1,4 @@
-core.register_chatcommand("effect", {
+core.register_chatcommand("lunar_effect", {
     description = "Sets the current lunar phase",
     privs = {server = true},
     params = "<hex> <hex> or <int 0 - 1>",
@@ -20,7 +20,7 @@ core.register_chatcommand("effect", {
 })
 
 
-core.register_chatcommand("phase", {
+core.register_chatcommand("lunar_phase", {
     description = "Adds to the current lunar phase",
     params = "add force",
     func = function(name, param)
