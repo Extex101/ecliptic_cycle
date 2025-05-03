@@ -1,7 +1,7 @@
-core.register_chatcommand("lunar_effect", {
-    description = "Sets the current lunar phase",
+core.register_chatcommand("set_lunar_effect", {
+    description = "Sets the current lunar effect.",
     privs = {server = true},
-    params = "<hex> <hex> or <int 0 - 1>",
+    params = "<hex> <hex> or <int 0 - 1> or <effect name>",
     func = function(name, param)
         if param == "" then
             local hexes, effect = ecliptic_cycle.get_effect()
@@ -16,6 +16,42 @@ core.register_chatcommand("lunar_effect", {
         end
         ecliptic_cycle.update_players()
         return true, "Effect set to: "..param
+    end
+})
+
+
+core.register_chatcommand("lunar_effects", {
+    description = "Lists all lunar effects.",
+    func = function(name, param)
+        local effects = "Registered Effects: \n • "
+        for i, effect_name in pairs(ecliptic_cycle.effects.names) do
+            local name_len = string.len(effect_name)
+            local colors = ecliptic_cycle.effects.colors[effect_name]
+            local col1 = {
+                r = tonumber(colors[1]:sub(2, 3), 16),
+                g = tonumber(colors[1]:sub(4, 5), 16),
+                b = tonumber(colors[1]:sub(6, 7), 16)
+            }
+            local col2 = {
+                r = tonumber(colors[2]:sub(2, 3), 16),
+                g = tonumber(colors[2]:sub(4, 5), 16),
+                b = tonumber(colors[2]:sub(6, 7), 16)
+            }
+            for j = 1, name_len do
+                local char = string.sub(effect_name, j, j)
+                local color_table = {
+                    r = math.floor((col1.r + (col2.r - col1.r) * (j - 1) / (name_len - 1))),
+                    g = math.floor((col1.g + (col2.g - col1.g) * (j - 1) / (name_len - 1))),
+                    b = math.floor((col1.b + (col2.b - col1.b) * (j - 1) / (name_len - 1)))
+                }
+                local col = string.format("#%02x%02x%02x", color_table.r, color_table.g, color_table.b)
+                effects = effects .. core.colorize(col, char)
+            end
+            if i ~= #ecliptic_cycle.effects.names then
+                effects = effects .. "\n • "
+            end
+        end
+        return true, effects
     end
 })
 
