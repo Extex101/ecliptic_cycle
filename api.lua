@@ -137,7 +137,7 @@ function ecliptic_cycle.is_event(day)
         ))
     )
     local event2 = math.cos(math.rad(day*math.max(math.min(math.tan(math.rad(day)), math.pi), -math.pi)))*2
-    return event > ecliptic_cycle.threshold, event2 < -ecliptic_cycle.variance_threshold
+    return event > ecliptic_cycle.major_event_threshold, event2 < -ecliptic_cycle.minor_event_threshold
 end
 
 function ecliptic_cycle.update_player_moon(player)

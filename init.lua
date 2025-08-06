@@ -7,12 +7,13 @@ if not core.settings:get("ecliptic_cycle.update_timer") then
 end
 
 ecliptic_cycle = {
+    _VERSION = "1.2b-l",
     phase_offset = tonumber(core.settings:get("ecliptic_cycle.phase_offset")),
     update_timer = tonumber(core.settings:get("ecliptic_cycle.update_timer")),
     current_lunar_phase = 0, -- Unset. Server needs to start before it can be set.
     effect = {}, -- Current active effect. Two Hex codes. One for the base and one for the highlights.
-    threshold = 1.94, -- Threshold for registered effect events
-    variance_threshold = 1.5, -- Threshold for random color variance events
+    major_event_threshold = 1.94, -- Threshold for registered effect events
+    minor_event_threshold = 1.5, -- Threshold for random color variance events
     variance = 0.3, -- Variance for random color events
 }
 
