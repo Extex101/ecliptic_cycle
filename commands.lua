@@ -63,10 +63,10 @@ core.register_chatcommand("lunar_phase", {
         local privs = core.get_player_privs(name)
         local phase = ecliptic_cycle.current_lunar_phase
         local string = ecliptic_cycle.phase_names[phase+1].."(" .. phase .. ")"
+        if param:find("-version") then
+            return true, "ecliptic_cycle version: "..ecliptic_cycle._VERSION
+        end
         if not privs.server then
-            if param:gmatch("force") or param:gmatch("add") then
-                return false, "Insufficient privileges."
-            end
             return true, "Lunar phase is: "..string
         end
         if param:find("^add") or param:find("^subtract") then
