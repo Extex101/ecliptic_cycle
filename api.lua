@@ -7,7 +7,7 @@ ecliptic_cycle.phase_names = {
     "Northern Waning Quarter",
     "Northern Waning Crescent",
     "Northern Waning Crescent",
-    "Sourthern New Moon",
+    "Southern New Moon",
     "Southern Waxing Crescent",
     "Southern Waxing Crescent",
     "Southern Waxing Quarter",
@@ -35,6 +35,7 @@ ecliptic_cycle.effects = {
     colors = {},
     names = {}
 }
+
 
 local function get_hexes(string)
     local hexes = {}
@@ -69,9 +70,33 @@ function ecliptic_cycle.random_color(min, max, fac)
     return hex
 end
 
-function ecliptic_cycle.register_effect(name, col1, col2)
-    ecliptic_cycle.effects.colors[name] = {col1, col2}
+function ecliptic_cycle.register_effect(name, col1, col2, message)
+    ecliptic_cycle.effects.colors[name] = {col1, col2, core.get_color_escape_sequence(col2)..message}
     table.insert(ecliptic_cycle.effects.names, name)
+
+
+    ecliptic_cycle.list_lunar_effects = ecliptic_cycle.list_lunar_effects .. "\n • "
+    local name_len = string.len(name)
+    local start_col = {
+        r = tonumber(col1:sub(2, 3), 16),
+        g = tonumber(col1:sub(4, 5), 16),
+        b = tonumber(col1:sub(6, 7), 16)
+    }
+    local end_col = {
+        r = tonumber(col2:sub(2, 3), 16),
+        g = tonumber(col2:sub(4, 5), 16),
+        b = tonumber(col2:sub(6, 7), 16)
+    }
+    for j = 1, name_len do
+        local char = string.sub(name, j, j)
+        local color_table = {
+            r = math.floor((start_col.r + (end_col.r - start_col.r) * (j - 1) / (name_len - 1))),
+            g = math.floor((start_col.g + (end_col.g - start_col.g) * (j - 1) / (name_len - 1))),
+            b = math.floor((start_col.b + (end_col.b - start_col.b) * (j - 1) / (name_len - 1)))
+        }
+        local col = string.format("#%02x%02x%02x", color_table.r, color_table.g, color_table.b)
+        ecliptic_cycle.list_lunar_effects = ecliptic_cycle.list_lunar_effects .. core.get_color_escape_sequence(col)..char
+    end
 end
 
 function ecliptic_cycle.update_players()
@@ -86,8 +111,9 @@ function ecliptic_cycle.get_day()
 end
 
 ---@param ... string|number
----@return boolean
----@return string
+---@return boolean success
+---@return string action_message
+---@return string|nil chat_message
 function ecliptic_cycle.set_effect(...)
     local args = {...}
     if #args == 1 then
@@ -97,13 +123,14 @@ function ecliptic_cycle.set_effect(...)
             return true, "Random Color set"
         elseif type(param) == "string" then
             if param == "shuffle" then
-                local effect = ecliptic_cycle.effects.names[math.random(1, #ecliptic_cycle.effects.names)]
-                ecliptic_cycle.effect = ecliptic_cycle.effects.colors[effect]
-                ecliptic_cycle.effect[3] = effect
-                return true, "Shuffled to: "..effect
+                local effect_name = ecliptic_cycle.effects.names[math.random(1, #ecliptic_cycle.effects.names)]
+                local effect = ecliptic_cycle.effects.colors[effect_name]
+                ecliptic_cycle.effect = {effect[1], effect[2], effect_name, effect[3]}
+                return true, "Shuffled to: "..effect_name
             end
             if ecliptic_cycle.effects.colors[param] then
-                ecliptic_cycle.effect = ecliptic_cycle.effects.colors[param]
+                local effect = ecliptic_cycle.effects.colors[param]
+                ecliptic_cycle.effect = {effect[1], effect[2], param, effect[3]}
                 ecliptic_cycle.effect[3] = param
                 return true, "Set to: "..param
             end
@@ -155,11 +182,10 @@ function ecliptic_cycle.update_player_moon(player)
     })
 end
 
----@param skip boolean|nil If true then it will not update the effect for the day
-function ecliptic_cycle.update_phase(skip)
+
+function ecliptic_cycle.update_phase()
     local day = ecliptic_cycle.get_day()
     ecliptic_cycle.current_lunar_phase = day % 30
-    if skip then return end
     local event, random_event = ecliptic_cycle.is_event(day)
     if event then
         ecliptic_cycle.set_effect("shuffle")

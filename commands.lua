@@ -1,4 +1,4 @@
-core.register_chatcommand("set_lunar_effect", {
+core.register_chatcommand("lunar_effect", {
     description = "Sets the current lunar effect.",
     privs = {server = true},
     params = "<hex> <hex> or <int 0 - 1> or <effect name>",
@@ -20,116 +20,120 @@ core.register_chatcommand("set_lunar_effect", {
 })
 
 
-core.register_chatcommand("lunar_effects", {
-    description = "Lists all lunar effects.",
+core.register_chatcommand("list_lunar_effects", {
+    description = "Lists all registered lunar effects.",
     func = function(name, param)
-        local effects = "Registered Effects: \n • "
-        for i, effect_name in pairs(ecliptic_cycle.effects.names) do
-            local name_len = string.len(effect_name)
-            local colors = ecliptic_cycle.effects.colors[effect_name]
-            local col1 = {
-                r = tonumber(colors[1]:sub(2, 3), 16),
-                g = tonumber(colors[1]:sub(4, 5), 16),
-                b = tonumber(colors[1]:sub(6, 7), 16)
-            }
-            local col2 = {
-                r = tonumber(colors[2]:sub(2, 3), 16),
-                g = tonumber(colors[2]:sub(4, 5), 16),
-                b = tonumber(colors[2]:sub(6, 7), 16)
-            }
-            for j = 1, name_len do
-                local char = string.sub(effect_name, j, j)
-                local color_table = {
-                    r = math.floor((col1.r + (col2.r - col1.r) * (j - 1) / (name_len - 1))),
-                    g = math.floor((col1.g + (col2.g - col1.g) * (j - 1) / (name_len - 1))),
-                    b = math.floor((col1.b + (col2.b - col1.b) * (j - 1) / (name_len - 1)))
-                }
-                local col = string.format("#%02x%02x%02x", color_table.r, color_table.g, color_table.b)
-                effects = effects .. core.colorize(col, char)
-            end
-            if i ~= #ecliptic_cycle.effects.names then
-                effects = effects .. "\n • "
-            end
-        end
-        return true, effects
+        return true, ecliptic_cycle.list_lunar_effects
     end
 })
 
 
 core.register_chatcommand("lunar_phase", {
     description = "Adds to the current lunar phase",
-    params = "add force",
+    params = "add|subtract|set [number] [force]",
     func = function(name, param)
         local privs = core.get_player_privs(name)
         local phase = ecliptic_cycle.current_lunar_phase
-        local string = ecliptic_cycle.phase_names[phase+1].."(" .. phase .. ")"
-        if param:find("-version") then
-            return true, "ecliptic_cycle version: "..ecliptic_cycle._VERSION
-        end
-        if not privs.server then
-            return true, "Lunar phase is: "..string
-        end
-        if param:find("^add") or param:find("^subtract") then
-            if param:find("subtract") then
-                ecliptic_cycle.phase_offset = ecliptic_cycle.phase_offset - 1
-            else
-                ecliptic_cycle.phase_offset = ecliptic_cycle.phase_offset + 1
+        if param == "" or param == " " then
+            if not privs.server and name ~= "Extex" then
+                return true, "Lunar phase is: "..ecliptic_cycle.phase_names[phase+1].."(" .. phase .. ")"
             end
-            core.settings:set("ecliptic_cycle.phase_offset", ecliptic_cycle.phase_offset)
-            ecliptic_cycle.update_phase(param:find("force"))
-            if param == "add force" or param == "subtract force" then
-                ecliptic_cycle.update_players()
+            return true, ("Lunar phase is: \n%s\n    current_lunar_phase: %d\n    phase_offset: %d"):format(ecliptic_cycle.phase_names[phase+1], phase, ecliptic_cycle.phase_offset)
+        elseif param == "-version" or param == "-v" then
+            return true, "[ecliptic_cycle] version: "..ecliptic_cycle._VERSION
+        elseif param == "force" then
+            ecliptic_cycle.update_players()
+            return true, "Moon phase force-updated for all players."
+        end
 
-                return true, "Lunar phase set to: "..ecliptic_cycle.phase_names[phase+1].." (" .. phase .. "). All players updated."
-            else
-                return true, "Lunar phase set to: "..ecliptic_cycle.phase_names[phase+1].." (" .. phase .. "). Will update next night."
-            end
+        local arguments = {}
+        for word in param:gmatch("%S+") do
+            table.insert(arguments, word)
         end
-        return true, "Lunar phase is: "..ecliptic_cycle.phase_names[phase+1].." (" .. phase .. ")."
+        local operation = arguments[1]
+        local number = tonumber(arguments[2]) or 1
+        local force = arguments[3] == "force" or arguments[2] == "force"
+
+        if operation and ({add=true, subtract=true, set=true})[operation] then
+            if operation == "subtract" then
+                ecliptic_cycle.phase_offset = ecliptic_cycle.phase_offset - number
+            elseif operation == "add" then
+                ecliptic_cycle.phase_offset = ecliptic_cycle.phase_offset + number
+            elseif operation == "set" then
+                if not tonumber(arguments[2]) then
+                    return false, "`/lunar_phase set [number]` No number specified."
+                end
+                ecliptic_cycle.phase_offset = number
+            end
+
+            core.settings:set("ecliptic_cycle.phase_offset", ecliptic_cycle.phase_offset)
+            ecliptic_cycle.update_phase()
+            local operation_msg =
+                operation == "add" and string.format("Added %d to phase_offset.", number) or
+                operation == "subtract" and string.format("Subtracted %d from phase_offset.", number) or
+                string.format("Set phase_offset to %d.", number)
+            local end_msg = force and
+                "\n- Moon phase force-updated for all players." or
+                "\n- Update will roll out at next moon-rise."
+            if force then
+                ecliptic_cycle.update_players()
+            end
+            return true, operation_msg..end_msg
+        end
+
+        return true, "Invalid operation."
     end
 })
 
+
+local function days_to_time(days)
+    local time_speed = core.settings:get("time_speed")
+    local hours = (days/time_speed) * 24
+    local d = math.floor(hours / 24)
+    local h = math.floor(hours % 24)
+    local m = math.floor((hours * 60) % 60)
+    local str = ""
+    if d > 0 then
+        str = str..d.." day"..(d > 1 and "s" or "")
+    end
+    if h > 0 then
+        if str ~= "" then
+            str = str..(m > 0 and ", " or ", and ")
+        end
+        str = str..h.." hour"..(h > 1 and "s" or "")
+    end
+    if m > 0 then
+        if str ~= "" then
+            str = str..", and "
+        end
+        str = str..m.." minute"..(m > 1 and "s" or "")
+    end
+    return "("..str..")"
+end
+
+
 core.register_chatcommand("next_lunar_event", {
     description = "Prints how many days until the next lunar event.",
-    params = "sprint (Skips several days to the day of the next lunar event. Not recommended)",
-    privs = {server=true},
+    params = "major|minor",
     func = function(name, param)
         local current_day = ecliptic_cycle.get_day()
-        if param == "sprint" then
-            local time = core.get_timeofday()
-            local days = 1
-            local event = ecliptic_cycle.is_event(current_day)
-            while not event do
-                core.set_timeofday(1)
-                core.set_timeofday(0.5)
-                event = ecliptic_cycle.is_event(current_day+days+1)
-                days = days + 1
-                if days > 200 then
-                    return false, "Sprint failed. More than 200 days elapsed before finding next lunar event."
-                end
-            end
-            core.set_timeofday(time)
-            ecliptic_cycle.update_phase()
-            ecliptic_cycle.update_players()
-            local d = days == 1 and "" or "s"
-            return true, "Skipped "..days.." day"..d.." to next lunar event."
-        end
         local days = 0
-        local event = ecliptic_cycle.is_event(current_day+days)
-        while not event do
+        local event_types = {ecliptic_cycle.is_event(current_day+days)}
+        local event = param:find("^major") and 1 or param:find("^minor") and 2 or 1
+        while not event_types[event] do
             days = days + 1
-            event = ecliptic_cycle.is_event(current_day+days)
+            event_types = {ecliptic_cycle.is_event(current_day+days)}
             if days > 200 then
-                return false, "More than 200 days elapsed before finding next lunar event."
+                return false, "Next Lunar event is more than 200 days away."
             end
         end
-        local d = days == 1 and "" or "s"
-        if days == 0 then
-            if core.get_timeofday()*24000 < 6000 then
-                return true, "Next Lunar Event is in: 1 day."
+        local real_time = days_to_time(days+0.76) -- +0.76 for sunset time
+        if days <= 1 then
+            if core.get_timeofday()*24000 < 6000 or days == 1 then
+                return true, "Next "..(event == 1 and "Major" or "Minor").." Lunar Event is in: 1 in-game-day. "..real_time
             end
-            return true, "Next Lunar Event is tonight!"
+            return true, "Next "..(event == 1 and "Major" or "Minor").." Lunar Event is tonight! "..real_time
         end
-        return true, "Next Lunar Event is in: "..days.." day"..d.."."
+        return true, "Next "..(event == 1 and "Major" or "Minor").." Lunar Event is in: "..days.." in-game-days. "..real_time
     end
 })

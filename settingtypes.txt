@@ -1,5 +1,8 @@
-# Lunar Phase Offset (in days). Stirring <0> The Husks <36500> Calendar Start <438000> The Scorching <3033150> Dead Age <3763150>
+# Lunar Phase Offset (in days). Stirring <0> Calendar Start <438000> The Scorching <3033150> Dead Age <3763150>
 ecliptic_cycle.phase_offset (Phase Offset) float 3763156
 
 # Timer before mod checks the time to see if the phase needs to be updates. \nIf you have a very fast time_speed you should change this to something small.
 ecliptic_cycle.update_timer (Update Timer) float 10
+
+# Print a special message before each Major Lunar Event.
+ecliptic_cycle.enable_event_messages (Enable Event Messages) bool true

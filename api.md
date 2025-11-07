@@ -151,13 +151,7 @@ Gets the current phase texture and applies the effect (if needed) and set's the 
 
   
 
-### `ecliptic_cycle.update_phase(skip)`
-
-**Parameters**:
-
--  `skip`: (Optional) skip event check for the new phase.
-
-  
+### `ecliptic_cycle.update_phase()`
 
 **Description**:
 
