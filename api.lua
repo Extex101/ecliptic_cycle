@@ -154,17 +154,17 @@ function ecliptic_cycle.set_effect(...)
 end
 
 ---@param day number
----@return boolean Event1 This day will shuffle a custom event from the effects created with register_effect
----@return boolean Event2 This day will have a subtle random effect
+---@return boolean majorEvent This day will shuffle a custom event from the effects created with register_effect
+---@return boolean minorEvent This day will have a subtle random effect
 function ecliptic_cycle.is_event(day)
-    local event = (math.cos(math.rad(
+    local majorEvent = (math.cos(math.rad(
             day * 367.088)) +
         math.sin(math.rad(
             day/(day*5 % 60 + 60) * 7000
         ))
     )
-    local event2 = math.cos(math.rad(day*math.max(math.min(math.tan(math.rad(day)), math.pi), -math.pi)))*2
-    return event > ecliptic_cycle.major_event_threshold, event2 < -ecliptic_cycle.minor_event_threshold
+    local minorEvent = math.cos(math.rad(day*math.max(math.min(math.tan(math.rad(day)), math.pi), -math.pi)))*2
+    return majorEvent > ecliptic_cycle.major_event_threshold, minorEvent < -ecliptic_cycle.minor_event_threshold
 end
 
 function ecliptic_cycle.update_player_moon(player)
