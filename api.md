@@ -11,7 +11,7 @@
 
 **Description**:
 
-Add a new custom effect to the list drawn from at every event1.
+Add a new custom effect to the list drawn from at every major event.
 
 ---
 
@@ -115,17 +115,17 @@ ecliptic_cycle.set_effect("#ff00ff #ffffff")
 
 **Returns**:
 
--  `boolean`: event1 (effect shuffle)
+-  `boolean`: majorEvent (effect shuffle)
 
--  `boolean`: event2 (desaturated random color)
+-  `boolean`: minorEvent (desaturated random color)
 
   
 
 **Description**:
 
-- Event1 happens around once every 15-150~ days. (3-7 times per 365 days)
+- Major events happen around once every 15-150~ days. (3-7 times per 365 days)
 
-- Event2 happens every 1-15 days.
+- Minor events happens every 1-15 days.
 
   
 
